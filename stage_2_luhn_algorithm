@@ -1,0 +1,140 @@
+############
+# banking.py
+############
+from bank import Bank
+
+def main():
+    bank = Bank() # Create an instance of Bank
+    # Menu
+    while True:
+        print("""1. Create an account
+2. Log into account
+0. Exit""")
+
+        # User input
+        usr = input()
+        match usr:
+            case '0':
+                print("\nBye!")
+                break
+
+            case '1':
+                bank.create_account()
+
+            case '2':
+                bank.log_in_account()
+
+            case _:
+                print('Invalid input!\n')
+
+
+
+if __name__ == '__main__':
+    main()
+
+
+#########
+# bank.py
+#########
+from account import Account
+
+
+class Bank:
+    def __init__(self):
+        self.accounts = {
+            '4000000000000009': Account()  # Predefined dummy account
+        }
+        self.accounts['4000000000000009'].pin = '0000'  # Set the PIN explicitly
+
+    def create_account(self):
+        account = Account()
+        self.accounts[account.identifier] = account
+        print(f"\nYour card has been created\nYour card number:\n{account.identifier}\nYour card PIN:\n{account.pin}\n")
+
+    def log_in_account(self):
+        print("\nEnter your account number:")
+        identifier = input()
+        print("Enter your PIN:")
+        pin = input()
+
+        if identifier in self.accounts and self.accounts[identifier].pin == pin:
+            print("\nYou have successfully logged in!\n")
+            self.logged_in_menu(self.accounts[identifier])
+        else:
+            print("\nWrong card number or PIN!\n")
+        return None
+
+    def logged_in_menu(self, account):
+        while True:
+            print("""1. Balance
+2. Log out
+0. Exit""")
+
+            # print("Select an option: ")
+            usr = input()
+            match usr:
+                case '0':
+                    print("\nBye!")
+                    exit()
+
+                case '1':
+                    print(f"\nBalance: {account.get_balance()}\n")
+
+                case '2':
+                    print("\nYou have successfully logged out!\n")
+                    return  # Returns to the main menu
+
+                case _:
+                    print("Invalid input!")
+
+############
+# account.py
+############
+import random
+
+
+class Account:
+    def __init__(self):
+        self.identifier = self._generate_identifier()
+        self.pin = self._generate_pin()
+        self.balance = 0
+
+    @staticmethod
+    def _generate_identifier():
+        while True:
+            iin = '400000'
+            ain = ''.join(str(random.randint(0, 9)) for _ in range(9))
+            partial_identifier = iin + ain
+
+            def luhn_algorithm(identifier):
+                digits = [int(d) for d in identifier]  # Convert to integer list
+                for i in range(len(digits) - 1, -1, -2):  # Double every second digit from the right
+                    digits[i] *= 2
+                    if digits[i] > 9:
+                        digits[i] -= 9
+                checksum = (10 - sum(digits) % 10) % 10  # Compute checksum
+                return str(checksum)
+
+            checksum = luhn_algorithm(partial_identifier)
+            return partial_identifier + checksum
+
+    @staticmethod
+    def _generate_pin():
+        return ''.join(str(random.randint(0, 9)) for _ in range(4))
+
+    def get_balance(self):
+        return self.balance
+
+    def deposit(self, amount):
+        if amount > 0:
+            self.balance += amount
+            print(f"Deposited {amount}. New balance: {self.balance}")
+        else:
+            print("Invalid deposit amount.")
+
+    def withdraw(self, amount):
+        if 0 < amount <= self.balance:
+            self.balance -= amount
+            print(f"Withdrawn {amount}. Remaining balance: {self.balance}")
+        else:
+            print("Insufficient funds or invalid amount.")

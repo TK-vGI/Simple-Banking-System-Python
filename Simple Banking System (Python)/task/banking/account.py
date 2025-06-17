@@ -12,8 +12,19 @@ class Account:
         while True:
             iin = '400000'
             ain = ''.join(str(random.randint(0, 9)) for _ in range(9))
-            checksum = '9'
-            return iin + ain + checksum
+            partial_identifier = iin + ain
+
+            def luhn_algorithm(identifier):
+                digits = [int(d) for d in identifier]  # Convert to integer list
+                for i in range(len(digits) - 1, -1, -2):  # Double every second digit from the right
+                    digits[i] *= 2
+                    if digits[i] > 9:
+                        digits[i] -= 9
+                checksum = (10 - sum(digits) % 10) % 10  # Compute checksum
+                return str(checksum)
+
+            checksum = luhn_algorithm(partial_identifier)
+            return partial_identifier + checksum
 
     @staticmethod
     def _generate_pin():
