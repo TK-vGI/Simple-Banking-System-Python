@@ -2,10 +2,10 @@ import random
 
 
 class Account:
-    def __init__(self):
-        self.identifier = self._generate_identifier()
-        self.pin = self._generate_pin()
-        self.balance = 0
+    def __init__(self, identifier=None, pin=None, balance=0):
+        self.identifier = identifier or self._generate_identifier()
+        self.pin = pin or self._generate_pin()
+        self.balance = balance
 
     @staticmethod
     def _generate_identifier():
