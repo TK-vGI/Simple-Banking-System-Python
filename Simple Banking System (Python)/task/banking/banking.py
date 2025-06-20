@@ -19,7 +19,8 @@ def main():
                 bank.create_account()
 
             case '2':
-                bank.log_in_account()
+                if bank.log_in_account(): # Check if exit was requested
+                    break
 
             case _:
                 print('Invalid input!\n')
